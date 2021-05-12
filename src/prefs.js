@@ -14,6 +14,7 @@ const BlurMePrefsWidget = GObject.registerClass(
     InternalChildren: [
       "sigma_scale",
       "brightness_scale",
+      "radius_scale",
       "blur_dash",
       "blur_panel",
       "blur_overview",
@@ -33,6 +34,9 @@ const BlurMePrefsWidget = GObject.registerClass(
 
       // ! sigma
       this._sigma_scale.set_value(config.SIGMA.get());
+
+      // ! sigma
+      this._radius_scale.set_value(config.RADIUS.get());
 
       // ! brightness
       this._brightness_scale.set_value(config.BRIGHTNESS.get());
@@ -82,6 +86,11 @@ const BlurMePrefsWidget = GObject.registerClass(
     brightness_changed(w) {
       let value = w.get_value();
       config.BRIGHTNESS.set(value);
+    }
+
+    radius_changed(w) {
+      let value = w.get_value();
+      config.RADIUS.set(value);
     }
 
     blur_dash_toggled(w) {

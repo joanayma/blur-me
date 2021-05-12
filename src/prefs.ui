@@ -5,13 +5,18 @@
 
     <object class="GtkAdjustment" id="brightness_adjustment">
       <property name="upper">1</property>
-      <property name="step_increment">1</property>
+      <property name="step_increment">0.01</property>
       <property name="page_increment">10</property>
     </object>
     <object class="GtkAdjustment" id="sigma_adjustment">
       <property name="upper">100</property>
       <property name="step_increment">1</property>
       <property name="page_increment">10</property>
+    </object>
+    <object class="GtkAdjustment" id="radius_adjustment">
+      <property name="upper">100</property>
+      <property name="step_increment">1</property>
+      <property name="page_increment">1</property>
     </object>
     <object class="GtkAdjustment" id="dash_opacity_adjustment">
       <property name="upper">1</property>
@@ -78,6 +83,31 @@
           </object>
         </child>
 
+        <child>
+          <object class="GtkLabel">
+            <property name="can_focus">0</property>
+            <property name="label" translatable="yes">Window Radius</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">2</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScale" id="radius_scale">
+            <property name="draw-value">1</property>
+            <property name="adjustment">radius_adjustment</property>
+            <property name="round_digits">0</property>
+            <property name="digits">0</property>
+            <property name="value_pos">right</property>
+            <signal name="value-changed" handler="radius_changed" swapped="no" />
+            <layout>
+              <property name="column">1</property>
+              <property name="row">2</property>
+            </layout>
+          </object>
+        </child>
+
         <!--! BLUR SWITCHES !-->
 
         <child>
@@ -86,7 +116,7 @@
             <property name="orientation">vertical</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">2</property>
+              <property name="row">3</property>
               <property name="column-span">2</property>
             </layout>
           </object>
@@ -98,7 +128,7 @@
             <property name="label" translatable="yes">Blur</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">3</property>
+              <property name="row">4</property>
               <property name="row-span">5</property>
             </layout>
           </object>
@@ -110,7 +140,7 @@
             <signal name="toggled" handler="blur_dash_toggled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">3</property>
+              <property name="row">4</property>
             </layout>
           </object>
         </child>
@@ -121,7 +151,7 @@
             <signal name="toggled" handler="blur_panel_toggled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">4</property>
+              <property name="row">5</property>
             </layout>
           </object>
         </child>
@@ -132,7 +162,7 @@
             <signal name="toggled" handler="blur_overview_toggled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">5</property>
+              <property name="row">6</property>
             </layout>
           </object>
         </child>
@@ -143,7 +173,7 @@
             <signal name="toggled" handler="blur_lockscreen_toggled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">6</property>
+              <property name="row">7</property>
             </layout>
           </object>
         </child>
@@ -154,7 +184,7 @@
             <signal name="toggled" handler="blur_applications_toggled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">7</property>
+              <property name="row">8</property>
             </layout>
           </object>
         </child>
@@ -165,7 +195,7 @@
             <signal name="toggled" handler="blur_other_toggled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">8</property>
+              <property name="row">9</property>
             </layout>
           </object>
         </child>
@@ -178,7 +208,7 @@
             <property name="orientation">vertical</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">9</property>
+              <property name="row">10</property>
               <property name="column-span">2</property>
             </layout>
           </object>
@@ -191,7 +221,7 @@
             <property name="justify">center</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">10</property>
+              <property name="row">11</property>
               <property name="row-span">1</property>
             </layout>
           </object>
@@ -204,7 +234,7 @@
             <property name="justify">center</property>
             <layout>
               <property name="column">1</property>
-              <property name="row">10</property>
+              <property name="row">11</property>
               <property name="row-span">1</property>
             </layout>
           </object>
@@ -215,7 +245,7 @@
             <property name="orientation">vertical</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">11</property>
+              <property name="row">12</property>
               <property name="column-span">2</property>
             </layout>
           </object>
@@ -230,7 +260,7 @@
             <property name="justify">center</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">12</property>
+              <property name="row">13</property>
               <property name="row-span">3</property>
             </layout>
           </object>
@@ -242,7 +272,7 @@
             <signal name="toggled" handler="hacks_level0_toggled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">12</property>
+              <property name="row">13</property>
             </layout>
           </object>
         </child>
@@ -254,7 +284,7 @@
             <signal name="toggled" handler="hacks_level1_toggled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">13</property>
+              <property name="row">14</property>
             </layout>
           </object>
         </child>
@@ -267,7 +297,7 @@
             <signal name="toggled" handler="hacks_level2_toggled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">14</property>
+              <property name="row">15</property>
             </layout>
           </object>
         </child>
@@ -280,7 +310,7 @@
             <property name="orientation">vertical</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">15</property>
+              <property name="row">16</property>
               <property name="column-span">2</property>
             </layout>
           </object>
@@ -294,7 +324,7 @@
             <property name="justify">center</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">16</property>
+              <property name="row">17</property>
             </layout>
           </object>
         </child>
@@ -308,7 +338,7 @@
             <signal name="value-changed" handler="dash_opacity_changed" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">16</property>
+              <property name="row">17</property>
             </layout>
           </object>
         </child>
@@ -321,7 +351,7 @@
             <property name="justify">center</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">17</property>
+              <property name="row">18</property>
             </layout>
           </object>
         </child>
@@ -332,7 +362,7 @@
             <signal name="toggled" handler="static_blur_toogled" swapped="no" />
             <layout>
               <property name="column">1</property>
-              <property name="row">18</property>
+              <property name="row">19</property>
             </layout>
           </object>
         </child>

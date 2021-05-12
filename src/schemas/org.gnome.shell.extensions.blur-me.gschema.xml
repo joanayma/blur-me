@@ -13,6 +13,12 @@
             <summary>Global brightness to use</summary>
             <description />
         </key>
+        <!-- RADIUS -->
+        <key type="i" name="radius">
+            <default>0</default>
+            <summary>Global radius (window radius) to use</summary>
+            <description />
+        </key>
         <!-- BLUR DASH -->
         <key type="b" name="blur-dash">
             <default>true</default>

@@ -1,20 +1,20 @@
 "use strict";
 
-const { St, Shell, Meta, Gio, GLib } = imports.gi;
+const { St, Shell, Meta, Gio, GLib, Clutter } = imports.gi;
 const Main = imports.ui.main;
-const Clutter = imports.gi.Clutter;
 
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Settings = Me.imports.settings;
 const Utils = Me.imports.utilities;
 const PanelIndicator = Me.imports.panel_indicator;
+const { AdvancedBlurActor } = Me.imports.advanced_blur_actor;
 let prefs = new Settings.Prefs();
 
 const default_sigma = 30;
 const default_brightness = 0.6;
+const default_radius = 0;
 
 let sigma = 30;
-
 var ApplicationsBlur = class ApplicationsBlur {
   constructor(connections) {
     this.connections = connections;
@@ -23,6 +23,7 @@ var ApplicationsBlur = class ApplicationsBlur {
       sigma: default_sigma,
       mode: Shell.BlurMode.BACKGROUND,
     });
+    this.radius = default_radius;
     this.windowActorBlurMap = new Map();
     this.pid = 0;
     this.override_map = {};
@@ -67,13 +68,23 @@ var ApplicationsBlur = class ApplicationsBlur {
       offset: -offsetHeight,
     });
 
-    let blurActor = new Clutter.Actor();
+    let blurActor = new AdvancedBlurActor();
+    blurActor.initBlurParts(this.radius);
     blurActor.add_constraint(constraintPosX);
     blurActor.add_constraint(constraintPosY);
     blurActor.add_constraint(constraintSizeX);
     blurActor.add_constraint(constraintSizeY);
 
-    blurActor.add_effect_with_name("blur-effect", blurEffect);
+    blurActor.tileActors.forEach((x) => {
+      x.add_effect_with_name(
+        "blur-effect",
+        new Shell.BlurEffect({
+          brightness: this.effect.brightness,
+          sigma: this.effect.sigma,
+          mode: this.effect.mode,
+        })
+      );
+    });
     wab.blurActor = blurActor;
     if (wab.actor.visible && !wab.excluded) {
       blurActor.show();
@@ -124,7 +135,9 @@ var ApplicationsBlur = class ApplicationsBlur {
   update_blur(pid) {
     if (this.windowActorBlurMap.has(pid)) {
       let wab = this.windowActorBlurMap.get(pid);
-      wab.excluded = this.override_map[Utils.get_process_name_from_window(wab.window)] === false;
+      wab.excluded =
+        this.override_map[Utils.get_process_name_from_window(wab.window)] ===
+        false;
       if (wab.blurActor) {
         this.update_blur_actor(pid);
       } else {
@@ -158,8 +171,20 @@ var ApplicationsBlur = class ApplicationsBlur {
           sigma: this.effect.sigma,
           mode: this.effect.mode,
         });
-        blur_actor.remove_effect_by_name("blur-effect");
-        blur_actor.add_effect_with_name("blur-effect", blurEffect);
+        blur_actor.tileActors.forEach((x) => {
+          x.remove_effect_by_name("blur-effect");
+        });
+        blur_actor.initBlurParts(this.radius);
+        blur_actor.tileActors.forEach((x) => {
+          x.add_effect_with_name(
+            "blur-effect",
+            new Shell.BlurEffect({
+              brightness: this.effect.brightness,
+              sigma: this.effect.sigma,
+              mode: this.effect.mode,
+            })
+          );
+        });
         if (wab.actor.visible && !wab.excluded) {
           blur_actor.show();
         } else {
@@ -302,6 +327,12 @@ var ApplicationsBlur = class ApplicationsBlur {
     this.effect.brightness = b;
     this.blur_setting_changed();
   }
+
+  set_radius(r) {
+    this.radius = r;
+    this.blur_setting_changed();
+  }
+
   set_overrides(overrides) {
     this.override_map = overrides;
     this.blur_setting_changed();

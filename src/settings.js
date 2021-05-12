@@ -47,6 +47,22 @@ var Prefs = class Prefs {
             },
         };
 
+        this.RADIUS = {
+            key: 'radius',
+            get: function () {
+                return settings.get_int(this.key);
+            },
+            set: function (v) {
+                settings.set_int(this.key, v);
+            },
+            changed: function (cb) {
+                return settings.connect('changed::' + this.key, cb);
+            },
+            disconnect: function () {
+                return settings.disconnect.apply(settings, arguments);
+            },
+        };
+
         this.WINDOW_CLASS_OVERRIDES = {
             key: 'window-class-overrides',
             get: function () {

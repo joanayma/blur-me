@@ -61,6 +61,7 @@ class Extension {
 
         this._update_sigma();
         this._update_brightness();
+        this._update_radius();
         this._applications_blur.set_overrides(this._prefs.WINDOW_CLASS_OVERRIDES.get());
         this._log("extension enabled.");
     }
@@ -94,6 +95,9 @@ class Extension {
         });
         this._prefs.BRIGHTNESS.changed(() => {
             this._update_brightness();
+        });
+        this._prefs.RADIUS.changed(() => {
+            this._update_radius();
         });
 
         this._prefs.BLUR_DASH.changed(() => {
@@ -177,6 +181,12 @@ class Extension {
         this._lockscreen_blur.set_brightness(brightness);
         this._applications_blur.set_brightness(brightness);
         this._other_blur.set_brightness(brightness);
+    }
+
+    _update_radius() {
+        let radius = this._prefs.RADIUS.get();
+
+        this._applications_blur.set_radius(radius);
     }
 
     _log(str) {
