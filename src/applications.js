@@ -69,7 +69,7 @@ var ApplicationsBlur = class ApplicationsBlur {
     });
 
     let blurActor = new AdvancedBlurActor();
-    blurActor.initBlurParts(this.radius);
+    blurActor.initBlurParts([this.radius,this.radius,this.radius,this.radius]);
     blurActor.add_constraint(constraintPosX);
     blurActor.add_constraint(constraintPosY);
     blurActor.add_constraint(constraintSizeX);
@@ -174,7 +174,7 @@ var ApplicationsBlur = class ApplicationsBlur {
         blur_actor.tileActors.forEach((x) => {
           x.remove_effect_by_name("blur-effect");
         });
-        blur_actor.initBlurParts(this.radius);
+        blur_actor.initBlurParts([this.radius,this.radius,this.radius,this.radius]);
         blur_actor.tileActors.forEach((x) => {
           x.add_effect_with_name(
             "blur-effect",

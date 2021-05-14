@@ -1,4 +1,4 @@
-const { GObject, GLib, Clutter } = imports.gi;
+const { GObject, GLib, Clutter, St } = imports.gi;
 const AdvancedBlurActor = GObject.registerClass(
   {
     GTypeName: "AdvancedBlurActor",
@@ -35,15 +35,30 @@ const AdvancedBlurActor = GObject.registerClass(
       this.srcTile.set_position(0, 0);
       this.add_child(this.srcTile);
     }
-    initBlurParts(radius) {
+    initBlurParts(radiuses) {
       this.tileActors.forEach((x) => this.remove_child(x));
       this.tileActors = [];
       let blurActor = this;
+      let topLeftRadius = radiuses[0];
+      let topRightRadius = radiuses[1];
+      let bottomRightRadius = radiuses[2];
+      let bottomLeftRadius = radiuses[3];
+      let radius = Math.max(...radiuses);
       for (let ik = 0; ik < radius; ik++) {
-        let oo =
-          radius - Math.sqrt(radius * radius - (radius - ik) * (radius - ik));
+        let ooT =
+          topLeftRadius -
+          Math.sqrt(
+            Math.pow(topLeftRadius, 2) -
+              Math.pow(Math.max(topLeftRadius - ik, 0), 2)
+          );
+        let ooB =
+          bottomLeftRadius -
+          Math.sqrt(
+            Math.pow(bottomLeftRadius, 2) -
+              Math.pow(Math.max(bottomLeftRadius - ik, 0), 2)
+          );
         blurActor.addNineTileActor(
-          [oo, Clutter.SnapEdge.TOP],
+          [ooT, Clutter.SnapEdge.TOP],
           [ik, Clutter.SnapEdge.LEFT],
           [radius, Clutter.SnapEdge.TOP],
           [ik + 1, Clutter.SnapEdge.LEFT],
@@ -52,7 +67,7 @@ const AdvancedBlurActor = GObject.registerClass(
         blurActor.addNineTileActor(
           [-radius, Clutter.SnapEdge.BOTTOM],
           [ik, Clutter.SnapEdge.LEFT],
-          [-oo, Clutter.SnapEdge.BOTTOM],
+          [-ooB, Clutter.SnapEdge.BOTTOM],
           [ik + 1, Clutter.SnapEdge.LEFT],
           new Clutter.Actor()
         );
@@ -79,10 +94,21 @@ const AdvancedBlurActor = GObject.registerClass(
         new Clutter.Actor()
       );
       for (let ik = 0; ik < radius; ik++) {
-        let oo =
-          radius - Math.sqrt(radius * radius - (radius - ik) * (radius - ik));
+        let ooT =
+          topRightRadius -
+          Math.sqrt(
+            Math.pow(topRightRadius, 2) -
+              Math.pow(Math.max(topRightRadius - ik, 0), 2)
+          );
+        let ooB =
+          bottomRightRadius -
+          Math.sqrt(
+            Math.pow(bottomRightRadius, 2) -
+              Math.pow(Math.max(bottomRightRadius - ik, 0), 2)
+          );
+
         blurActor.addNineTileActor(
-          [oo, Clutter.SnapEdge.TOP],
+          [ooT, Clutter.SnapEdge.TOP],
           [-ik - 1, Clutter.SnapEdge.RIGHT],
           [radius, Clutter.SnapEdge.TOP],
           [-ik, Clutter.SnapEdge.RIGHT],
@@ -91,7 +117,7 @@ const AdvancedBlurActor = GObject.registerClass(
         blurActor.addNineTileActor(
           [-radius, Clutter.SnapEdge.BOTTOM],
           [-ik - 1, Clutter.SnapEdge.RIGHT],
-          [-oo, Clutter.SnapEdge.BOTTOM],
+          [-ooB, Clutter.SnapEdge.BOTTOM],
           [-ik, Clutter.SnapEdge.RIGHT],
           new Clutter.Actor()
         );

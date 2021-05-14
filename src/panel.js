@@ -7,6 +7,7 @@ const backgroundSettings = new Gio.Settings({ schema: 'org.gnome.desktop.backgro
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Settings = Me.imports.settings;
 const Utils = Me.imports.utilities;
+const { AdvancedBlurActor } = Me.imports.advanced_blur_actor;
 let prefs = new Settings.Prefs;
 
 const dash_to_panel_uuid = 'dash-to-panel@jderose9.github.com';
@@ -23,6 +24,9 @@ var PanelBlur = class PanelBlur {
             sigma: default_sigma,
             mode: prefs.STATIC_BLUR.get() ? 0 : 1
         });
+        this.radiuses = new Array(4)
+      .fill(0)
+      .map((x, i) => Main.panel.actor.get_theme_node().get_border_radius(i));
         this.background_parent = new St.Widget({
             style_class: 'topbar-blurred-background-parent',
             x: 0,
@@ -30,13 +34,15 @@ var PanelBlur = class PanelBlur {
             width: this.monitor.width,
             height: 0,
         });
-        this.background = prefs.STATIC_BLUR.get() ? new Meta.BackgroundActor : new St.Widget({
-            style_class: 'topbar-blurred-background',
+        this.background = prefs.STATIC_BLUR.get() ? new Meta.BackgroundActor : new AdvancedBlurActor({
             x: Main.panel.position.x,
             y: Main.panel.position.y,
             width: Main.panel.width,
             height: Main.panel.height,
         });
+        if (this.background.tileActors) {
+            this.background.initBlurParts(this.radiuses);
+          }
         this.background_parent.add_child(this.background);
     }
 
@@ -88,16 +94,36 @@ var PanelBlur = class PanelBlur {
         let is_static = prefs.STATIC_BLUR.get();
 
         this.background_parent.remove_child(this.background);
-        this.background.remove_effect(this.effect);
-        this.background = is_static ? new Meta.BackgroundActor : new St.Widget({
-            style_class: 'topbar-blurred-background',
+        if (this.background.tileActors) {
+            this.background.tileActors.forEach((x) => {
+              x.remove_effect_by_name("blur-effect");
+            });
+          } else {
+            this.background.remove_effect(this.effect);
+          }
+        this.background = is_static ? new Meta.BackgroundActor : new AdvancedBlurActor({
             x: Main.panel.position.x,
             y: Main.panel.position.y,
             width: Main.panel.width,
             height: Main.panel.height,
         });
         this.effect.set_mode(is_static ? 0 : 1);
-        this.background.add_effect(this.effect);
+        if (this.background.tileActors) {
+            this.background.initBlurParts(this.radiuses);
+      
+            this.background.tileActors.forEach((x) => {
+              x.add_effect_with_name(
+                "blur-effect",
+                new Shell.BlurEffect({
+                  brightness: this.effect.brightness,
+                  sigma: this.effect.sigma,
+                  mode: this.effect.mode,
+                })
+              );
+            });
+          } else {
+            this.background.add_effect(this.effect);
+          }
         this.background_parent.add_child(this.background);
 
         this.update_wallpaper(is_static);
